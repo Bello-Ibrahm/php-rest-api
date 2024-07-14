@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $audience_claim = "Testing_purpose"; // Audience of the token
             $issuedat_claim = time(); // Time when the token was issued
             $notbefore_claim = $issuedat_claim + 10; // Token can't be used before this time
-            $expire_claim = $issuedat_claim + 120; // Token expires in 2 minutes (60 * 60 * 24 * 30 => Token expires in 30 days 30 days) 
+            $expire_claim = $issuedat_claim + 300; // Token expires in 5 minutes (60 * 60 * 24 * 30 => Token expires in 30 days 30 days) 
 
             $token = array(
                 "iss" => $issuer_claim,
