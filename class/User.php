@@ -37,7 +37,7 @@ class User {
     {
         $this->id = $id;
 
-        $stmt = "SELECT id, name, email, created_at FROM ".$this->tableName . " WHERE id = :id;";
+        $stmt = "SELECT id, name, email, role, created_at FROM ".$this->tableName . " WHERE id = :id;";
         $this->con->query($stmt);
 
         $this->con->bind(':id', $this->id);
