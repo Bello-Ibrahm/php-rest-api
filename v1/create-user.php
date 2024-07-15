@@ -12,6 +12,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
+// Include error class
+include("../class/Error.php");
+
 // Check if the request method is POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     include("../database/Database.php");
@@ -23,11 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Check database connection
     if (!$db->isConnected()) {
-        http_response_code(500); // Server error
-        echo json_encode([
-            "status" => 0,
-            "message" => "Lost connection to the database, try again"
-        ]);
+        // Server error
+        Err::_500(0, "Database connection failed, try again");
         exit;
     }
 
@@ -36,11 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Validate input
     if (empty($params['name']) || empty($params['email']) || empty($params['password'])) {
-        http_response_code(400); // Bad request
-        echo json_encode([
-            "status" => 0,
-            "message" => "name, email, and password are required"
-        ]);
+        // Required error
+        Err::_402(0, "name, email, and password are required");
         exit;
     }
     
@@ -52,11 +49,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userEmail = Utility::checkEmailExist($db, $params['email']);
 
     if (!empty($userEmail)) {
-        http_response_code(409); // Server error
-        echo json_encode([
-            "status" => 0,
-            "message" => "Email exists, use another email"
-        ]);
+        // Conflict error
+        Err::_409(0, "Email exists, use another email");
+        exit;
     } else {
         // Create user
         $result = $user->createUser($params['name'], $params['email'], $params['password']);
@@ -67,20 +62,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 "message" => "User created successfully"
             ]);
         } else {
-            http_response_code(500); // Server error
-            echo json_encode([
-                "status" => 0,
-                "message" => "Failed to create user"
-            ]);
+            // Server error
+            Err::_500();
+            exit;
         }
-    }
-
-
-    
+    }    
 } else {
-    http_response_code(405); // Method Not Allowed
-    echo json_encode([
-        "status" => 0,
-        "message" => "Method not allowed"
-    ]);
+    // Method Not Allowed
+    Err::_405();
+    exit;
 }

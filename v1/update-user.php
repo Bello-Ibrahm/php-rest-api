@@ -12,6 +12,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
+// Include error class
+include("../class/Error.php");
+
 // Check if the request method is POST
 if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     include("../database/Database.php");
@@ -23,11 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
 
     // Check database connection
     if (!$db->isConnected()) {
-        http_response_code(500); // Server error
-        echo json_encode([
-            "status" => 0,
-            "message" => "Lost connection to the database, try again"
-        ]);
+        // Server error
+        Err::_500(0, "Database connection failed, try again");
         exit;
     }
 
@@ -36,15 +36,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
 
     // Validate input
     if (empty($params['id']) || empty($params['name']) || empty($params['password']) || empty($params['role'])) {
-        http_response_code(400); // Bad request
-        echo json_encode([
-            "status" => 0,
-            "message" => "id, name, password, and role are required"
-        ]);
+        // Required error
+        Err::_402(0, "id, name, password, and role are required");
         exit;
     }
     
-
     // Instantiate User class
     $user = new User($db);
 
@@ -57,22 +53,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
             "message" => "User updated successfully"
         ]);
     } else if ($result === null) {
-        http_response_code(400); // Invalid request
-        echo json_encode([
-            "status" => 0,
-            "message" => "No record to update"
-        ]);
+        // Not found error
+        Err::_404(0, "No record to update");
+        exit;
     } else {
-        http_response_code(500); // Server error
-        echo json_encode([
-            "status" => 0,
-            "message" => "Failed to update user"
-        ]);
+        // Not found error
+        Err::_500();
+        exit;
     }
 } else {
-    http_response_code(405); // Method Not Allowed
-    echo json_encode([
-        "status" => 0,
-        "message" => "Method not allowed"
-    ]);
+    // Method not allowed
+    Err::_405();
+    exit;
 }

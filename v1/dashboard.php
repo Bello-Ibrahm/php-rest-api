@@ -14,6 +14,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit; // Return empty response for OPTIONS
 }
 
+// Include error class
+include("../class/Error.php");
+
 if ($_SERVER['REQUEST_METHOD'] === "GET") {
     // Database, User, and Utility class includes
     include("../database/Database.php");
@@ -25,11 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
 
     // Check database connection
     if (!$db->isConnected()) {
-        http_response_code(500); // Server error
-        echo json_encode([
-            "status" => 0,
-            "message" => "Lost connection to the database, try again"
-        ]);
+        // Server error
+        Err::_500(0, "Database connection failed, try again");
         exit;
     }
 
@@ -60,24 +60,18 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
                 "message" => "User page access"
             ]);
         } else {
-            http_response_code(403);
-            echo json_encode([
-                "status" => 0,
-                "message" => "Access restricted"
-            ]);
+            // Unauthorized error
+            Err::_401();
+            exit;
         }
     } else {
         // JWT token is invalid or expired
-        http_response_code(401); // Unauthorized
-        echo json_encode([
-            "status" => 0,
-            "message" => "Invalid token"
-        ]);
+        // Forbiden error
+        Err::_403(0, "Invalid token");
+        exit;
     }
 } else {
-    http_response_code(405); // Method Not Allowed
-    echo json_encode([
-        "status" => 0,
-        "message" => "Method not allowed"
-    ]);
+    // Method Not Allowed
+    Err::_405();
+    exit;
 }

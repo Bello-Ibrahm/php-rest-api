@@ -17,6 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // Set Content-Type header for JSON responses
 header('Content-Type: application/json; charset=UTF-8');
 
+// Include error class
+include("../class/Error.php");
 
 // Check if the request method is POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -29,11 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Check database connection
     if (!$db->isConnected()) {
-        http_response_code(500); // Server error
-        echo json_encode([
-            "status" => 0,
-            "message" => "Lost connection to the database, try again"
-        ]);
+        // Server error
+        Err::_500(0, "Database connection failed, try again");
         exit;
     }
 
@@ -42,14 +41,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Validate input
     if (empty($params['email']) || empty($params['password'])) {
-        http_response_code(400); // Bad request
-        echo json_encode([
-            "status" => 0,
-            "message" => "email and password are required"
-        ]);
+        // Required error
+        Err::_402(0, "email and password are required");
         exit;
     }
-    
 
     // Instantiate User class
     $user = new User($db);
@@ -90,25 +85,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 "message" => "Login successfully"
             ]);
         } else {
-            http_response_code(404);
-            echo json_encode([
-                "status" => 0,
-                "message" => "Invalid credentials"
-            ]);
+            // Not found error
+            Err::_404(0, "Invalid password");
+            exit;
         }
     } else {
-        http_response_code(404);
-        echo json_encode([
-            "status" => 0,
-            "message" => "Invalid credentials"
-        ]);
+        // Not found error
+        Err::_404(0, "Invalid email");
+        exit;
     }
     
 } else {
-    http_response_code(405); // Method Not Allowed
-    echo json_encode([
-        "status" => 0,
-        "message" => "Method not allowed"
-    ]);
+    // Method not allowed
+    Err::_405();
+    exit;
 }
 ?>

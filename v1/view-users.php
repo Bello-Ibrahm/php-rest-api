@@ -12,7 +12,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+// Include error class
+include("../class/Error.php");
+
+if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     include("../database/Database.php");
     include("../class/User.php");
 
@@ -21,11 +24,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     
     // Check database connection
     if (!$db->isConnected()) {
-        http_response_code(500); // Server error
-        echo json_encode([
-            "status" => 0,
-            "message" => "Lost connection to the database, try again"
-        ]);
+        // Server error
+        Err::_500(0, "Database connection failed, try again");
         exit;
     }
         
@@ -43,25 +43,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             ]);
         } else {
             // No data found
-            http_response_code(400);
-            echo json_encode([
-                "status" => 0,
-                "message" => "No user data found"
-            ]);
+            Err::_404(0, "No user data found");
+            exit;
         }
     } else {
         // Server error
-        http_response_code(500);
-        echo json_encode([
-            "status" => 0,
-            "message" => "Server error, try again!"
-        ]);
+        Err::_500();
+        exit;
     }
 } else {
     // Method not allowed
-    http_response_code(503);
-    echo json_encode([
-        "status" => 0,
-        "message" => "Method not allowed"
-    ]);
+    Err::_405();
+    exit;
 }

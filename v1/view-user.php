@@ -12,6 +12,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
+// Include error class
+include("../class/Error.php");
 
 // Check if the request method is POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -23,11 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Check database connection
     if (!$db->isConnected()) {
-        http_response_code(500); // Server error
-        echo json_encode([
-            "status" => 0,
-            "message" => "Lost connection to the database, try again"
-        ]);
+        // Server error
+        Err::_500(0, "Database connection failed, try again");
         exit;
     }
 
@@ -36,11 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Validate input
     if (empty($params['id'])) {
-        http_response_code(400); // Bad request
-        echo json_encode([
-            "status" => 0,
-            "message" => "User ID is required"
-        ]);
+        // Required error
+        Err::_402(0, "User ID is required");
         exit;
     }
 
@@ -61,25 +57,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 "data" => $userData
             ]);
         } else {
-            // No data found
-            http_response_code(400);
-            echo json_encode([
-                "status" => 0,
-                "message" => "No user data found"
-            ]);
+            // Not found error
+            Err::_404(0, "No user data found");
+            exit;
         }
     } else {
-        http_response_code(500); // Server error
-        echo json_encode([
-            "status" => 0,
-            "message" => "Server error, try again"
-        ]);
+        // Server error
+        Err::_500();
+        exit;
     }
 } else {
-    http_response_code(405); // Method Not Allowed
-    echo json_encode([
-        "status" => 0,
-        "message" => "Method not allowed"
-    ]);
+    // Method not allowed
+    Err::_405();
+    exit;
 }
 ?>
