@@ -1,27 +1,47 @@
 # PHP RestAPI with JWT Authentication Implementation
 
 ## Requirements:
-- Server (Nginx, LAMP, XAMPP, etc)
-- Composer
-- API testing platform (Postman, or any other)
+- Server (Nginx, LAMP, [XAMPP](https://www.apachefriends.org/download.html), etc)
+- [Composer](https://getcomposer.org/download/)
+- API testing platform ([Postman](https://www.postman.com/downloads/) | curl, or any other)
 - Database used, Mariadb (any others are, MySQL, SQlite, etc).
 
 ## Installation:
-Clone the repo
+1.  Clone the repo
 ```
 git clone https://github.com/bello-ibrahm/php-rest-api.git
 ``` 
-Switch to  the working directory 
+2. Switch to  the working directory 
 ```
 cd php-rest-api
 ```
-Install dependencies
+3. Install dependencies
 ```
 composer install
 ```
+4. Migrate the database schema:
+  - On terminal
+  ```
+    cat SQL-dump.sql | mysql -uroot -p 
+  ```
+then input your MySql root password if applied in your configuration else hit the enter key to continue.
 
-## Usages and Test - on terminal (curl)
-- Create a User:
+- On XAMPP (PHPMyAdmin):
+  - Copy the `SQL-dump.sql` content and paste it into the query terminal, before you run the query, change all the `CHARSET=utf8mb4` (MariaDB charset) to `CHARSET=utf8` for MySQL charset or else leave everything as default if using `MariaDB`
+- if you are using MySQL database, go to the `database/Database.php` on line `41` uncomment it and remove line `42`
+
+5. Rename `.env.example` to `.env` and supply the below:
+```
+DB_HOST=localhost
+DB_USER=php_rest_api_dev
+DB_PASS=php_rest_api_123
+DB_NAME=php_rest_api_db
+
+SECRET_KEY=your_scecret_key
+```
+
+## Usages and Testing - on the Terminal (curl)
+### Create a User (POST method):
 ```
 ┌──(bello㉿kali)-[/var/www/html/php-rest-api]
 └─$ curl -XPOST \
@@ -42,20 +62,20 @@ http://localhost/php-rest-api/v1/create-user.php
 http://localhost/php-rest-api/v1/create-user.php
 {"status":1,"message":"User created successfully"}           
 ```
-- View Users:
+### View Users (GET method):
 ```
 ┌──(bello㉿kali)-[/var/www/html/php-rest-api]
 └─$ curl -XGET http://localhost/php-rest-api/v1/view-users.php
 {"status":1,"message":"Ok","data":[{"id":1,"name":"user1","email":"user1@test.com","role":0,"created_at":"2024-07-14 20:45:16"},{"id":2,"name":"user2","email":"user2@test.com","role":0,"created_at":"2024-07-14 20:46:03"},{"id":3,"name":"user3","email":"user3@test.com","role":0,"created_at":"2024-07-14 20:46:24"}]} 
 ```
-- View User by ID:
+### View User by ID (POST method):
 ```
 ┌──(bello㉿kali)-[/var/www/html/php-rest-api]
 └─$ curl -XPOST \
 -d '{"id": "2"}' http://localhost/php-rest-api/v1/view-user.php
 {"status":1,"message":"Ok","data":{"id":2,"name":"user2","email":"user2@test.com","role":0,"created_at":"2024-07-14 20:46:03"}} 
 ```
-- Update User:
+### Update User (PUT method):
 ```
 ┌──(bello㉿kali)-[/var/www/html/php-rest-api]
 └─$ curl -XPUT \
@@ -69,7 +89,7 @@ http://localhost/php-rest-api/v1/update-user.php
 {"status":1,"message":"Ok","data":{"id":1,"name":"updated user","email":"user1@test.com","role":1,"created_at":"2024-07-14 20:45:16"}}
 ```
 
-- Delete User:
+### Delete User (DELETE method):
 ```
 ┌──(bello㉿kali)-[/var/www/html/php-rest-api]
 └─$ curl -XDELETE \
@@ -105,7 +125,7 @@ http://localhost/php-rest-api/v1/update-user.php
 {"status":1,"message":"Ok","data":[{"id":1,"name":"updated user","email":"user1@test.com","role":1,"created_at":"2024-07-14 20:45:16"},{"id":2,"name":"user2","email":"user2@test.com","role":0,"created_at":"2024-07-14 20:46:03"}]} 
 ```
 
-- User Login with Authorization (Bearer token):
+### User Login with Authorization (Bearer token - POST method):
 ```
 ┌──(bello㉿kali)-[/var/www/html/php-rest-api]
 └─$ curl -XPOST \
@@ -140,7 +160,7 @@ Note: Unnecessary use of -X or --request, POST is already inferred.
 * Connection #0 to host localhost left intact
 {"status":1,"message":"Login successfully"} 
 ```
-- User accessed dashboard with a valid token:
+### User Accessed Dashboard with a Valid Token (GET method):
 ```
 ┌──(bello㉿kali)-[/var/www/html/php-rest-api]
 └─$ curl -XGET \
@@ -148,7 +168,7 @@ Note: Unnecessary use of -X or --request, POST is already inferred.
 http://localhost/php-rest-api/v1/dashboard.php
 {"status":1,"message":"Admin page access"}   
 ```
-- User accessed dashboard with an Invalid token:
+### User Accessed Dashboard with an Invalid Token (GET method):
 ```
 ┌──(bello㉿kali)-[/var/www/html/php-rest-api]
 └─$ curl -XGET \
