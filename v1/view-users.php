@@ -13,11 +13,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // Include error class
-include("../class/Error.php");
+include("../classes/Error.php");
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     include("../database/Database.php");
-    include("../class/User.php");
+    include("../classes/User.php");
 
     // Handle GET request
     $db = new Database();

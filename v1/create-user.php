@@ -13,13 +13,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // Include error class
-include("../class/Error.php");
+include("../classes/Error.php");
 
 // Check if the request method is POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     include("../database/Database.php");
-    include("../class/User.php"); 
-    include("../class/Utility.php");
+    include("../classes/User.php"); 
+    include("../classes/Utility.php");
 
     // Initialize database connection
     $db = new Database();
